@@ -20,6 +20,7 @@ Usage
 -----
 
 ::
+
     liveserve [-h HOST] [-p PORT] [-w PATH ...] [-c COMMAND] [DIR]
 
 * `-h` or `--host`: The server's hostname.
