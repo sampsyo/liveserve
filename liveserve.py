@@ -17,8 +17,8 @@ __version__ = '1.0.0'
                 type=click.Path(exists=True, dir_okay=True, file_okay=False))
 @click.option('--watch', '-w', multiple=True, type=click.Path(),
               help='File or directory to watch')
-@click.option('--command', '-c',
-              help='Shell command to run on change')
+@click.option('--exec', '-x', 'command',
+              help='Run a shell command on change')
 def liveserve(host, port, servedir, watch, command):
     """Run a LiveReload HTTP server.
     """

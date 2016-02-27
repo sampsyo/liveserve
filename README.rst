@@ -26,7 +26,7 @@ Usage
 * `-p` or `--port`: The server's port.
 * `-w` or `--watch`: A file or directory to watch for changes. Specify as many
   as you like; if none are specified, defaults to the server root.
-* `-c` or `--command`: A shell command to execute when files change.
+* `-x` or `--exec`: A shell command to execute when files change.
 * The optional positional argument the directory to serve. Defaults to the
   working directory.
 
