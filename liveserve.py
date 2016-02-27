@@ -1,5 +1,11 @@
+"""A simple command-line LiveReload server using the excellent
+`python-livereload` library.
+"""
+
 import click
 import livereload
+
+__version__ = '1.0.0'
 
 
 @click.command()
