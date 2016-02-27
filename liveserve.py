@@ -9,15 +9,15 @@ __version__ = '1.0.0'
 
 
 @click.command()
-@click.option('--host', '-h', default='127.0.0.1',
+@click.option('--host', '-h', default='127.0.0.1', metavar='HOST',
               help='Hostname to run the server on')
-@click.option('--port', '-p', default=35729,
+@click.option('--port', '-p', default=35729, metavar='PORT',
               help='Port to run the server on')
-@click.argument('servedir', default='.',
+@click.argument('servedir', default='.', metavar='DIR',
                 type=click.Path(exists=True, dir_okay=True, file_okay=False))
 @click.option('--watch', '-w', multiple=True, type=click.Path(),
               help='File or directory to watch')
-@click.option('--exec', '-x', 'command',
+@click.option('--exec', '-x', 'command', metavar='COMMAND',
               help='Run a shell command on change')
 def liveserve(host, port, servedir, watch, command):
     """Run a LiveReload HTTP server.
