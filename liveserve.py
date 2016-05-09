@@ -4,8 +4,9 @@
 
 import click
 import livereload
+from fnmatch import fnmatch
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 
 @click.command()
@@ -19,7 +20,9 @@ __version__ = '1.0.0'
               help='File or directory to watch')
 @click.option('--exec', '-x', 'command', metavar='COMMAND',
               help='Run a shell command on change')
-def liveserve(host, port, servedir, watch, command):
+@click.option('--ignore', '-i', metavar='PATTERN', multiple=True,
+              help='Ignore paths with a glob pattern')
+def liveserve(host, port, servedir, watch, command, ignore):
     """Run a LiveReload HTTP server.
     """
     # If the user doesn't give us any explicit files to watch, watch the
@@ -27,13 +30,17 @@ def liveserve(host, port, servedir, watch, command):
     if not watch:
         watch = (servedir,)
 
+    # Keyword arguments to `server.watcher.watch`.
+    watchargs = {}
+    if command:
+        watchargs['func'] = livereload.shell(command)
+    for pat in ignore:
+        watchargs['ignore'] = lambda path: fnmatch(path, pat)
+
     # Set up and run the server.
     server = livereload.Server()
     for path in watch:
-        if command:
-            server.watcher.watch(path, livereload.shell(command))
-        else:
-            server.watcher.watch(path)
+        server.watcher.watch(path, **watchargs)
     server.serve(host=host, port=port, root=servedir)
 
 
