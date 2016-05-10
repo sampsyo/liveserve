@@ -4,9 +4,29 @@
 
 import click
 import livereload
-from fnmatch import fnmatch
+import fnmatch
+import os
 
 __version__ = '1.1.0'
+
+
+def fnmatch_any(filename, pattern):
+    """Test whether `filename` or any of its parent directories match
+    the glob pattern.
+    """
+    while filename:
+        # Try the current filename.
+        if fnmatch.fnmatch(filename, pattern):
+            return True
+
+        # Try its parent directory.
+        parent = os.path.dirname(filename)
+        if parent == filename:
+            break
+        filename = parent
+
+    # No matches.
+    return False
 
 
 @click.command()
@@ -35,7 +55,7 @@ def liveserve(host, port, servedir, watch, command, ignore):
     if command:
         watchargs['func'] = livereload.shell(command)
     for pat in ignore:
-        watchargs['ignore'] = lambda path: fnmatch(path, pat)
+        watchargs['ignore'] = lambda path: fnmatch_any(path, pat)
 
     # Set up and run the server.
     server = livereload.Server()
