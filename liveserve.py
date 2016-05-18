@@ -6,8 +6,11 @@ import click
 import livereload
 import fnmatch
 import os
+import time
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
+
+POLL_DELAY = 1.0
 
 
 def fnmatch_any(filename, pattern):
@@ -42,7 +45,9 @@ def fnmatch_any(filename, pattern):
               help='Run a shell command on change')
 @click.option('--ignore', '-i', metavar='PATTERN', multiple=True,
               help='Ignore paths with a glob pattern')
-def liveserve(host, port, servedir, watch, command, ignore):
+@click.option('--no-serve', '-S', 'serve', is_flag=True, default=True,
+              help='Do not start an HTTP server')
+def liveserve(host, port, servedir, watch, command, ignore, serve):
     """Run a LiveReload HTTP server.
     """
     # If the user doesn't give us any explicit files to watch, watch the
@@ -57,11 +62,28 @@ def liveserve(host, port, servedir, watch, command, ignore):
     for pat in ignore:
         watchargs['ignore'] = lambda path: fnmatch_any(path, pat)
 
-    # Set up and run the server.
-    server = livereload.Server()
+    # Set up the server, if any, or just create a watcher.
+    if serve:
+        server = livereload.Server()
+        watcher = server.watcher
+    else:
+        watcher = livereload.watcher.get_watcher_class()()
+
+    # Bind the watcher.
     for path in watch:
-        server.watcher.watch(path, **watchargs)
-    server.serve(host=host, port=port, root=servedir)
+        watcher.watch(path, **watchargs)
+
+    # Finally, launch the server (or watcher).
+    if serve:
+        server.serve(host=host, port=port, root=servedir)
+    else:
+        if not watcher.start(lambda: None):
+            # Filesystem events not available; use polling.
+            while True:
+                path, _ = watcher.examine()
+                if path:
+                    print('changed:', path)
+                time.sleep(POLL_DELAY)
 
 
 if __name__ == '__main__':

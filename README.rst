@@ -28,6 +28,9 @@ Usage
 * `-w` or `--watch`: A file or directory to watch for changes. Specify as many
   as you like; if none are specified, defaults to the server root.
 * `-x` or `--exec`: A shell command to execute when files change.
+* `-i` or `--ignore`: Exclude files from the watch list using a glob pattern.
+* `-S` or `--no-serve`: Do not start a Web server; just watch for changes and
+  execute commands.
 * The optional positional argument the directory to serve. Defaults to the
   working directory.
 
